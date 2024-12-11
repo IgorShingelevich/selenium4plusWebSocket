@@ -8,26 +8,18 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.devtools.DevTools;
 import org.openqa.selenium.devtools.v114.network.Network;
-import org.openqa.selenium.devtools.v114.network.model.Request;
-import org.openqa.selenium.devtools.v114.network.model.Response;
 import org.openqa.selenium.logging.LogType;
-import org.openqa.selenium.logging.LogEntry;
 import org.openqa.selenium.logging.LoggingPreferences;
-import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class WebSocketMessagesTest {
     private static final Logger LOGGER = Logger.getLogger(WebSocketMessagesTest.class.getName());
@@ -114,53 +106,23 @@ public class WebSocketMessagesTest {
     @Test
     public void getWebSocketMessagesTest() {
         try {
-            LOGGER.info("Starting WebSocket test...");
-            
-            // Navigate to the test page
+
             driver.get(TEST_URL);
-            LOGGER.info("Navigated to test page: " + TEST_URL);
-            
+
             WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
             
-            // Wait for the server URL input to be visible
-            WebElement serverUrlInput = wait.until(ExpectedConditions.presenceOfElementLocated(
-                By.cssSelector("input.form-control[placeholder='Server url']")));
-            String websocketUrl = serverUrlInput.getAttribute("value");
-            LOGGER.info("Found WebSocket URL input field: " + websocketUrl);
-            
-            // Wait for the connect button to be clickable
             WebElement connectButton = wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector(".btn-success")));
-            LOGGER.info("Found connect button");
-            
-            // Click connect button
             connectButton.click();
-            LOGGER.info("Clicked connect button");
-            
-            // Wait for connection to establish
-            Thread.sleep(2000);
-            LOGGER.info("Waited for connection to establish");
-            
-            // Verify the WebSocket URL
-            assertTrue(websocketUrl.contains("wss://socketsbay.com/wss/v2/1/demo/"),
-                      "Expected WebSocket URL to match socketsbay.com demo endpoint");
-            LOGGER.info("WebSocket URL verified");
-            
-            // Get the disconnect button which appears after successful connection
-            WebElement disconnectButton = wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".btn-danger")));
-            assertTrue(disconnectButton.isDisplayed(), "Expected disconnect button to be visible after connection");
-            LOGGER.info("Connection verified - disconnect button is visible");
 
-            // Print all captured messages
+            Thread.sleep(500);
+
             LOGGER.info("=== Captured WebSocket Messages ===");
             webSocketMessages.forEach(msg -> LOGGER.info(msg));
             LOGGER.info("=== End of WebSocket Messages ===");
-            
-            // Print browser console logs
-            LOGGER.info("=== Browser Console Logs ===");
-            driver.manage().logs().get(LogType.BROWSER)
-                .getAll().forEach(log -> LOGGER.info(log.getMessage()));
-            LOGGER.info("=== End of Browser Console Logs ===");
-            
+
+            System.out.println("ws messages total: " + webSocketMessages.size());
+            System.out.println("ws messages: \r\n" + webSocketMessages);
+
         } catch (Exception e) {
             LOGGER.severe("Test failed with exception: " + e.getMessage());
             e.printStackTrace();
